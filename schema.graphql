@@ -1,4 +1,373 @@
-type ExampleEntity @entity {
+type Address @entity {
   id: String!
-  name: String!
+  isContract: Boolean
+  transactions: [Transaction_entry!]! @derivedFrom(field: "from")
+}
+
+
+type Block_entry @entity {
+  id: String! # Globally unique identifier
+  baseFeePerGas: BigInt
+  extraData: Bytes!
+  gasLimit: BigInt!
+  gasUsed: BigInt!
+  hash: String!
+  logsBloom: Bytes!
+  miner: String!
+  number: BigInt!
+  parentHash: String!
+  receiptsRoot: Bytes!
+  size: BigInt!
+  stateRoot: String!
+  timestamp: BigInt!
+  totalDifficulty: BigInt!
+  transactionsRoot: String!
+  transactions: [Transaction_entry!]! @derivedFrom(field: "block")
+  # events: [Event_entry!]! @derivedFrom(field: "block")
+}
+
+type Transaction_entry @entity {
+  id: String! # Globally unique identifier (hash + chainId)
+  block: Block_entry! # Block this transaction is part of
+  blockHash: String!
+  blockNumber: BigInt!
+  chainId: Int
+  from: Address!
+  gas: BigInt!
+  gasPrice: BigInt
+  hash: String!
+  input: String!
+  maxFeePerGas: BigInt
+  maxPriorityFeePerGas: BigInt
+  nonce: Int!
+  to: Address!
+  transactionIndex: Int!
+  value: BigInt!
+  logs: [Log_entry!]! @derivedFrom(field: "transaction")
+  # events: [Event_entry!]! @derivedFrom(field: "transaction")
+}
+
+
+type Log_entry @entity {
+  id: String! # Globally unique identifier (`${blockHash}-${logIndex}`)
+  transaction: Transaction_entry! # Transaction this log is part of
+  address: Address!
+  blockHash: String!
+  blockNumber: BigInt!
+  data: String!
+  logIndex: Int!
+  removed: Boolean!
+  topics: [String!]!
+  transactionHash: String!
+  transactionIndex: Int!
+  # events: [Event_entry!]! @derivedFrom(field: "log")
+}
+
+
+type EIP712DomainChanged_EVENT @entity {
+  id: String!
+  contract: Address!
+  block: Block_entry!
+  transaction: Transaction_entry!
+  log: Log_entry!
+}
+
+type ProposalCanceled_EVENT @entity {
+  id: String!
+  contract: Address
+  block: Block_entry!
+  transaction: Transaction_entry!
+  log: Log_entry!
+  proposalId: BigInt!
+}
+
+type ProposalCreated_EVENT @entity {
+  id: String!
+  contract: Address
+  block: Block_entry!
+  transaction: Transaction_entry!
+  log: Log_entry!
+  proposalId: BigInt!
+  proposer: Address!
+  actions: [Action!]! @derivedFrom(field: "proposalId")
+  voteStart: BigInt!
+  voteEnd: BigInt!
+  description: String!
+}
+
+type Action @entity {
+  id: String!
+  proposalId: String!
+  index: Int!
+  target: Address
+  value: BigInt!
+  signature: String
+  calldata: Bytes
+}
+
+type ProposalExecuted_EVENT @entity {
+  id: String!
+  contract: Address
+  block: Block_entry!
+  transaction: Transaction_entry!
+  log: Log_entry!
+  proposalId: BigInt!
+}
+
+type ProposalQueued_EVENT @entity {
+  id: String!
+  contract: Address
+  block: Block_entry!
+  transaction: Transaction_entry!
+  log: Log_entry!
+  proposalId: BigInt!
+  etaSeconds: BigInt!
+}
+
+type ProposalThresholdSet_EVENT @entity {
+  id: String!
+  contract: Address
+  block: Block_entry!
+  transaction: Transaction_entry!
+  log: Log_entry!
+  oldProposalThreshold: BigInt!
+  newProposalThreshold: BigInt!
+}
+
+type QuorumNumeratorUpdated_EVENT @entity {
+  id: String!
+  contract: Address
+  block: Block_entry!
+  transaction: Transaction_entry!
+  log: Log_entry!
+  oldQuorumNumerator: BigInt!
+  newQuorumNumerator: BigInt!
+}
+
+type TimelockChange_EVENT @entity {
+  id: String!
+  contract: Address
+  block: Block_entry!
+  transaction: Transaction_entry!
+  log: Log_entry!
+  oldTimelock: Address!
+  newTimelock: Address!
+}
+
+type VoteCast_EVENT @entity {
+  id: String!
+  contract: Address
+  block: Block_entry!
+  transaction: Transaction_entry!
+  log: Log_entry!
+  voter: Address!
+  proposalId: BigInt!
+  support: Int!
+  weight: BigInt!
+  reason: String!
+}
+
+type VoteCastWithParams_EVENT @entity {
+  id: String!
+  contract: Address
+  block: Block_entry!
+  transaction: Transaction_entry!
+  log: Log_entry!
+  voter: Address!
+  proposalId: BigInt!
+  support: Int!
+  weight: BigInt!
+  reason: String!
+  params: Bytes!
+}
+
+type VotingDelaySet_EVENT @entity {
+  id: String!
+  contract: Address
+  block: Block_entry!
+  transaction: Transaction_entry!
+  log: Log_entry!
+  oldVotingDelay: BigInt!
+  newVotingDelay: BigInt!
+}
+
+type VotingPeriodSet_EVENT @entity {
+  id: String!
+  contract: Address
+  block: Block_entry!
+  transaction: Transaction_entry!
+  log: Log_entry!
+  oldVotingPeriod: BigInt!
+  newVotingPeriod: BigInt!
+}
+
+
+# ERC20 EVENTS --> START
+
+type Approval_EVENT @entity {
+  id: String!
+  owner: Address!
+  spender: Address!
+  value: BigInt!
+  contract: Address
+  block: Block_entry!
+  transaction: Transaction_entry!
+  log: Log_entry!
+}
+
+type DelegateChanged_EVENT @entity {
+  id: String!
+  delegator: Address!
+  fromDelegate: Address!
+  toDelegate: Address!
+  contract: Address
+  block: Block_entry!
+  transaction: Transaction_entry!
+  log: Log_entry!
+}
+
+type DelegateVotesChanged_EVENT @entity {
+  id: String!
+  delegate: Address!
+  previousVotes: BigInt!
+  newVotes: BigInt!
+  contract: Address
+  block: Block_entry!
+  transaction: Transaction_entry!
+  log: Log_entry!
+}
+
+
+type OwnershipTransferred_EVENT @entity {
+  id: String!
+  previousOwner: Address!
+  newOwner: Address!
+  contract: Address
+  block: Block_entry!
+  transaction: Transaction_entry!
+  log: Log_entry!
+}
+
+type Paused_EVENT @entity {
+  id: String!
+  account: Address!
+  contract: Address
+  block: Block_entry!
+  transaction: Transaction_entry!
+  log: Log_entry!
+}
+
+type Transfer_EVENT @entity {
+  id: String!
+  from: Address!
+  to: Address!
+  value: BigInt!
+  contract: Address
+  block: Block_entry!
+  transaction: Transaction_entry!
+  log: Log_entry!
+}
+
+type Unpaused_EVENT @entity {
+  id: String!
+  account: Address!
+  contract: Address
+  block: Block_entry!
+  transaction: Transaction_entry!
+  log: Log_entry!
+}
+
+
+# ERC20 EVENTS --> END
+
+
+# TIMELOCK EVENTS --> START
+type CallExecuted @entity {
+  id: String!
+  callId: Bytes!
+  index: BigInt!
+  target: Address!
+  value: BigInt!
+  data: Bytes!
+  contract: Address
+  block: Block_entry!
+  transaction: Transaction_entry!
+  log: Log_entry!
+}
+
+type CallSalt @entity {
+  id: String!
+  callId: Bytes!
+  salt: Bytes!
+  contract: Address
+  block: Block_entry!
+  transaction: Transaction_entry!
+  log: Log_entry!
+}
+
+type CallScheduled @entity {
+  id: String!
+  callId: Bytes!
+  index: BigInt!
+  target: Address!
+  value: BigInt!
+  data: Bytes!
+  predecessor: Bytes!
+  delay: BigInt!
+  contract: Address
+  block: Block_entry!
+  transaction: Transaction_entry!
+  log: Log_entry!
+}
+
+type Cancelled @entity {
+  id: String!
+  callId: Bytes!
+  contract: Address
+  block: Block_entry!
+  transaction: Transaction_entry!
+  log: Log_entry!
+}
+
+type MinDelayChange @entity {
+  id: String!
+  oldDuration: BigInt!
+  newDuration: BigInt!
+  contract: Address
+  block: Block_entry!
+  transaction: Transaction_entry!
+  log: Log_entry!
+}
+
+type RoleAdminChanged @entity {
+  id: String!
+  role: Bytes!
+  previousAdminRole: Bytes!
+  newAdminRole: Bytes!
+  contract: Address
+  block: Block_entry!
+  transaction: Transaction_entry!
+  log: Log_entry!
+}
+
+type RoleGranted @entity {
+  id: String!
+  role: Bytes!
+  account: Address!
+  sender: Address!
+  contract: Address
+  block: Block_entry!
+  transaction: Transaction_entry!
+  log: Log_entry!
+}
+
+type RoleRevoked @entity {
+  id: String!
+  role: Bytes!
+  account: Address!
+  sender: Address!
+  contract: Address
+  block: Block_entry!
+  transaction: Transaction_entry!
+  log: Log_entry!
 }
