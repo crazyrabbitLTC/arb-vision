@@ -6,6 +6,8 @@ export const config: Config = {
     {
       name: "arbitrum",
       chainId: 42161,
+      pollingInterval: 100,
+      maxRpcRequestConcurrency: 1,
       transport: http(process.env.PONDER_RPC_URL_42161),
     },
   ],

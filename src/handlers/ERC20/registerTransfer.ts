@@ -2,7 +2,7 @@ import { ponder } from "@/generated";
 import { createCommonEntities, getUniqueId } from "../../utils";
 
 export function registerTransferEvent() {
-  ponder.on("TransparentUpgradeableProxy:Transfer", async ({ event, context }) => {
+  ponder.on("TransparentUpgradeableProxy:Transfer(address indexed from, address indexed to, uint256 value)", async ({ event, context }) => {
     const { Transfer_EVENT } = context.entities;
   const { newBlock, newTransaction, newLog, sender, contract } = await createCommonEntities(event, context);
 

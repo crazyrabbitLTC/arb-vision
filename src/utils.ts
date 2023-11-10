@@ -1,5 +1,6 @@
 import { Log, Block, Transaction, } from "@ponder/core"
 import { Context, Block_entry as Block_entry_type, Log_entry as Log_entry_type, Transaction_entry as Transaction_entry_type, Address } from "@/generated"
+import { get } from "http";
 
 
 interface Entity {
@@ -14,6 +15,44 @@ interface CreateCommonEntitiesReturnType {
     newLog: Log_entry_type; // Replace 'any' with the actual type if known
     sender: Address;
     contract: Address;
+}
+
+export function getDelegationCurrentId(delegator: string, delegatee: string, contract: string) {
+    return `${delegator}-${delegatee}-${contract}`
+}
+
+export async function findOrCreateCurrentDelegation(delegator: string, fromDelegate: string, 
+    toDelegate: string, contractAddress: string, context: Context, block: Block) {
+
+    let delegatorAddress = await findOrCreateAddress(delegator, context);
+    let fromDelegateAddress = await findOrCreateAddress(fromDelegate, context);
+    let toDelegateAddress = await findOrCreateAddress(toDelegate, context);
+
+    let delegation;
+
+    try {
+        delegation = await context.entities.Delegation.findUnique({
+            id: getDelegationCurrentId(delegator, toDelegate, contractAddress)
+        })
+
+        if (!delegation) {
+            delegation = await context.entities.Delegation.create({
+                id: getDelegationCurrentId(delegator, toDelegate, contractAddress),
+                data: {
+                    delegator: delegatorAddress.id,
+                    delegatee: toDelegateAddress.id,
+                    isSelfDelegation: delegator === toDelegate,
+                    contract: contractAddress,
+                    startBlock: block.number,
+                }
+            })
+        }
+
+        return delegation
+    } catch (error) {
+        console.log(error)
+    }
+
 }
 
 export function getUniqueId(event: { log: Log; block: Block; transaction: Transaction; }, name: string) {
@@ -109,6 +148,12 @@ export async function findOrCreateAddress(id: string, context: Context, isContra
         id,
         data: {
             isContract: isContract,
+            isDelegating: false,
+            delegations_received_current_count: BigInt(0),
+            delegations_received_historical_count: BigInt(0),
+            gasUsed_delegations_received: BigInt(0),
+            gasUsed_delegations_sent: BigInt(0),
+            voting_power: BigInt(0),
         },
     });
 }

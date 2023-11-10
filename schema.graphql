@@ -1,10 +1,3 @@
-type Address @entity {
-  id: String!
-  isContract: Boolean
-  transactions: [Transaction_entry!]! @derivedFrom(field: "from")
-}
-
-
 type Block_entry @entity {
   id: String! # Globally unique identifier
   baseFeePerGas: BigInt
@@ -47,7 +40,6 @@ type Transaction_entry @entity {
   # events: [Event_entry!]! @derivedFrom(field: "transaction")
 }
 
-
 type Log_entry @entity {
   id: String! # Globally unique identifier (`${blockHash}-${logIndex}`)
   transaction: Transaction_entry! # Transaction this log is part of
@@ -62,7 +54,6 @@ type Log_entry @entity {
   transactionIndex: Int!
   # events: [Event_entry!]! @derivedFrom(field: "log")
 }
-
 
 type EIP712DomainChanged_EVENT @entity {
   id: String!
@@ -201,7 +192,6 @@ type VotingPeriodSet_EVENT @entity {
   newVotingPeriod: BigInt!
 }
 
-
 # ERC20 EVENTS --> START
 
 type Approval_EVENT @entity {
@@ -236,7 +226,6 @@ type DelegateVotesChanged_EVENT @entity {
   transaction: Transaction_entry!
   log: Log_entry!
 }
-
 
 type OwnershipTransferred_EVENT @entity {
   id: String!
@@ -277,9 +266,7 @@ type Unpaused_EVENT @entity {
   log: Log_entry!
 }
 
-
 # ERC20 EVENTS --> END
-
 
 # TIMELOCK EVENTS --> START
 type CallExecuted @entity {
@@ -371,3 +358,78 @@ type RoleRevoked @entity {
   transaction: Transaction_entry!
   log: Log_entry!
 }
+
+type Address @entity {
+  id: String!
+  isContract: Boolean
+  transactions: [Transaction_entry!]! @derivedFrom(field: "from") #TODO: Make multichain
+  # Token
+  # tokenBalance: BigInt!
+  # Delegations
+  isDelegating: Boolean!
+  # TODO: Make this Multichain
+  # delegations_received_current_count: BigInt! 
+  # delegations_received_historical_count: BigInt!
+  delegations_received: [Delegation!]! @derivedFrom(field: "delegatee")
+  delegations_sent: [Delegation!]! @derivedFrom(field: "delegator")
+  # Voting Power Changes
+  voting_power: BigInt!
+}
+
+# DelegateChanged_EVENT : DelegateChanged Event
+# DelegateVotesChanged_EVENT : DelegateVotesChanged Event
+
+# Delegations_Received_Current : All Delegations an Address is receiving (Currently)
+# - get all delegation whwere the endblock is null
+# Delegations_Received_Historical : All Delegations an Address has received (Historically)
+# - get all delegations
+# Delegations_Sent_Current : The Delegations made by an Address (Current)
+# - get all delegations where delegators is the address
+
+# type DelegationStat @entity{
+#   id: String! # address + contract + chainId
+#   address: Address!
+#   delegations_received_current_count: BigInt!
+#   delegations_received_historical_count: BigInt!
+#   delegations_sent_current_count: BigInt!
+#   delegations_sent_historical_count: BigInt!
+#   gasUsed_delegations_received: BigInt!
+#   gasUsed_delegations_sent: BigInt!
+# }
+
+type Delegation @entity {
+  id: String! #This is the Delgator + Delegatee + contractAddresss
+  isSelfDelegation: Boolean!
+  delegator: Address!
+  delegatee: Address!
+  transactions: [Transaction_entry!]! @derivedFrom(field: "delegation")
+  contract: Address!
+  startBlock: BigInt!
+  endBlock: BigInt
+}
+
+# type Delegation_Historical @entity {
+#   id: String! #This is the Delgator + Delegatee + StartBlock
+#   delegator: Address!
+#   fromDelegate: Address!
+#   toDelegatee: Address!
+#   balance: BigInt!
+#   contract: Address!
+#   startBlock: BigInt!
+#   endBlock: BigInt!
+# }
+
+# Delegations_Sent_Historical : All Delegations an Address has made (Historical)
+# Delegations_Sent_Power_Change : All Changes in the delegated voting power an Address is Delegating (EG: token balance changes)
+# Delegations_Received_Aggregate_Power_Change : All Changes in the total delegated voting power an Address is Receiving
+# Delegations_Recipient_Received_Power_Change : All changes in delegated voting power an address has received
+# - This requires tracking the token balance of the delegator
+
+# type Vote_Power_Change @entity {
+#   id: String!
+#   delegate: Address!
+#   previousBalance: BigInt!
+#   newBalance: BigInt!
+#   contract: Address!
+#   block: BigInt!
+# }

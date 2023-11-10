@@ -1,7 +1,6 @@
 import { ponder } from "@/generated";
-import { createCommonEntities } from "../../utils";
+import { createCommonEntities, findOrCreateAddress } from "../../utils";
 import { getUniqueId } from "../../utils";
-import { get } from "http";
 export function registerDelegateVotesChangedEvent() {
   
   ponder.on("TransparentUpgradeableProxy:DelegateVotesChanged", async ({ event, context }) => {
@@ -20,5 +19,16 @@ export function registerDelegateVotesChangedEvent() {
         log: newLog.id,
       },
     });
+
+    const receipient = await findOrCreateAddress(event.params.delegate, context);
+
+    // Update the address with the new balance
+    await context.entities.Address.update({
+        id: receipient.id,
+      data: {
+        voting_power: event.params.newBalance,
+      },
+    });
+
   });
 }
