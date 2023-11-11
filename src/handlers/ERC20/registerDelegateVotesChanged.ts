@@ -7,6 +7,8 @@ export function registerDelegateVotesChangedEvent() {
     const { DelegateVotesChanged_EVENT } = context.entities;
   const { newBlock, newTransaction, newLog, sender, contract } = await createCommonEntities(event, context);
 
+  console.log(event.params);
+  
     await DelegateVotesChanged_EVENT.create({
       id: getUniqueId(event, "DelegateVotesChanged"),
       data: {

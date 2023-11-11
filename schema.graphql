@@ -24,7 +24,6 @@ type Transaction_entry @entity {
   block: Block_entry! # Block this transaction is part of
   blockHash: String!
   blockNumber: BigInt!
-  chainId: Int
   from: Address!
   gas: BigInt!
   gasPrice: BigInt
@@ -81,8 +80,8 @@ type ProposalCreated_EVENT @entity {
   proposalId: BigInt!
   proposer: Address!
   actions: [Action!]! @derivedFrom(field: "proposalId")
-  voteStart: BigInt!
-  voteEnd: BigInt!
+  startBlock: BigInt!
+  endBlock: BigInt!
   description: String!
 }
 
@@ -112,7 +111,7 @@ type ProposalQueued_EVENT @entity {
   transaction: Transaction_entry!
   log: Log_entry!
   proposalId: BigInt!
-  etaSeconds: BigInt!
+  eta: BigInt!
 }
 
 type ProposalThresholdSet_EVENT @entity {
@@ -368,34 +367,13 @@ type Address @entity {
   # Delegations
   isDelegating: Boolean!
   # TODO: Make this Multichain
-  # delegations_received_current_count: BigInt! 
+  # delegations_received_current_count: BigInt!
   # delegations_received_historical_count: BigInt!
   delegations_received: [Delegation!]! @derivedFrom(field: "delegatee")
   delegations_sent: [Delegation!]! @derivedFrom(field: "delegator")
   # Voting Power Changes
   voting_power: BigInt!
 }
-
-# DelegateChanged_EVENT : DelegateChanged Event
-# DelegateVotesChanged_EVENT : DelegateVotesChanged Event
-
-# Delegations_Received_Current : All Delegations an Address is receiving (Currently)
-# - get all delegation whwere the endblock is null
-# Delegations_Received_Historical : All Delegations an Address has received (Historically)
-# - get all delegations
-# Delegations_Sent_Current : The Delegations made by an Address (Current)
-# - get all delegations where delegators is the address
-
-# type DelegationStat @entity{
-#   id: String! # address + contract + chainId
-#   address: Address!
-#   delegations_received_current_count: BigInt!
-#   delegations_received_historical_count: BigInt!
-#   delegations_sent_current_count: BigInt!
-#   delegations_sent_historical_count: BigInt!
-#   gasUsed_delegations_received: BigInt!
-#   gasUsed_delegations_sent: BigInt!
-# }
 
 type Delegation @entity {
   id: String! #This is the Delgator + Delegatee + contractAddresss
@@ -406,6 +384,16 @@ type Delegation @entity {
   contract: Address!
   startBlock: BigInt!
   endBlock: BigInt
+}
+
+type Vote @entity {
+  id: String!
+  contract: Address!
+  choice: Int!
+  reason: String
+  weight: BigInt!
+  voter: Address!
+  proposal: BigInt!
 }
 
 # type Delegation_Historical @entity {

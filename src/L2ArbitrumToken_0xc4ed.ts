@@ -10,22 +10,6 @@ registerDelegateChangedEvent();
 registerDelegateVotesChangedEvent();
 registerApprovalEvent();
 registerOwnershipTransferredEvent();
-// registerTransferEvent();
+registerTransferEvent();
 
-
-
-
-// ponder.on(
-//   "TransparentUpgradeableProxy:Approval",
-//   async ({ event, context }) => {
-//     console.log(event.params);
-//   }
-// );
-
-// ponder.on(
-//     "TransparentUpgradeableProxy:Transfer(address indexed from, address indexed to, uint256 value)",
-//   async ({ event, context }) => {
-//     console.log(event.params);
-//   }
-// );
 

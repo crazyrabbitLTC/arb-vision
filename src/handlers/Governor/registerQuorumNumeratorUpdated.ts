@@ -6,7 +6,7 @@ export function registerQuorumNumeratorUpdated() {
 
   
 // QuorumNumeratorUpdated_EVENT
-ponder.on("OZGovernor_QuorumNumeratorUpdated:QuorumNumeratorUpdated", async ({ event, context }) => {
+ponder.on("L2ArbitrumGovernor_0x0656:QuorumNumeratorUpdated", async ({ event, context }) => {
   const { QuorumNumeratorUpdated_EVENT, } = context.entities;
 
   const { newBlock, newTransaction, newLog, sender, contract } = await createCommonEntities(event, context);

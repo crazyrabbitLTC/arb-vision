@@ -5,7 +5,7 @@ import { createCommonEntities } from "../../utils"; // Adjust the import path as
 export function registerVotingPeriodSet() {
 
 // VotingPeriodSet_EVENT
-ponder.on("OZGovernor_VotingPeriodSet:VotingPeriodSet", async ({ event, context }) => {
+ponder.on("L2ArbitrumGovernor_0x0656:VotingPeriodSet", async ({ event, context }) => {
   const { VotingPeriodSet_EVENT, } = context.entities;
 
   const { newBlock, newTransaction, newLog, sender, contract } = await createCommonEntities(event, context);

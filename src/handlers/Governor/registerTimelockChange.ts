@@ -5,7 +5,7 @@ import { createCommonEntities } from "../../utils"; // Adjust the import path as
 export function registerTimelockChange() {
 
 // TimelockChange_EVENT
-ponder.on("OZGovernor_TimelockChange:TimelockChange", async ({ event, context }) => {
+ponder.on("L2ArbitrumGovernor_0x0656:TimelockChange", async ({ event, context }) => {
   const { TimelockChange_EVENT, } = context.entities;
 
   const { newBlock, newTransaction, newLog, sender, contract } = await createCommonEntities(event, context);

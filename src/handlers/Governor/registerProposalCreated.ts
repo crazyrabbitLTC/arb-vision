@@ -4,7 +4,7 @@ import { createCommonEntities } from "../../utils"; // Adjust the import path as
 
 export function registerProposalCreated() {
 
-  ponder.on("Governor:ProposalCreated", async ({ event, context }) => {
+  ponder.on("L2ArbitrumGovernor_0x0656:ProposalCreated", async ({ event, context }) => {
     const { ProposalCreated_EVENT, Action } = context.entities;
   
   const { newBlock, newTransaction, newLog, sender, contract } = await createCommonEntities(event, context);
@@ -44,8 +44,8 @@ export function registerProposalCreated() {
       data: {
         proposalId: event.params.proposalId,
         proposer: event.params.proposer,
-        voteStart: event.params.voteStart,
-        voteEnd: event.params.voteEnd,
+        startBlock: event.params.startBlock,
+        endBlock: event.params.endBlock,
         description: event.params.description,
         contract: contract.id,
         block: newBlock.id,

@@ -2,9 +2,9 @@
 import { ponder } from "@/generated";
 import { createCommonEntities } from "../../utils"; // Adjust the import path as necessary
 
-export function registerProposalExecutedEvent() {
+export function registerProposalExecuted() {
     // ProposalExecuted_EVENT
-    ponder.on("OZGovernor_ProposalExecuted:ProposalExecuted", async ({ event, context }) => {
+    ponder.on("L2ArbitrumGovernor_0x0656:ProposalExecuted", async ({ event, context }) => {
         const { ProposalExecuted_EVENT, } = context.entities;
 
       const { newBlock, newTransaction, newLog, sender, contract } = await createCommonEntities(event, context);

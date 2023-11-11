@@ -149,10 +149,6 @@ export async function findOrCreateAddress(id: string, context: Context, isContra
         data: {
             isContract: isContract,
             isDelegating: false,
-            delegations_received_current_count: BigInt(0),
-            delegations_received_historical_count: BigInt(0),
-            gasUsed_delegations_received: BigInt(0),
-            gasUsed_delegations_sent: BigInt(0),
             voting_power: BigInt(0),
         },
     });

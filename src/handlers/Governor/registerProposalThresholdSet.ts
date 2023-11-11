@@ -4,7 +4,7 @@ import { createCommonEntities } from "../../utils"; // Adjust the import path as
 
 export function registerProposalThresholdSet() {
 // ProposalThresholdSet_EVENT
-ponder.on("OZGovernor_ProposalThresholdSet:ProposalThresholdSet", async ({ event, context }) => {
+ponder.on("L2ArbitrumGovernor_0x0656:ProposalThresholdSet", async ({ event, context }) => {
     const { ProposalThresholdSet_EVENT, } = context.entities;
   
   const { newBlock, newTransaction, newLog, sender, contract } = await createCommonEntities(event, context);
